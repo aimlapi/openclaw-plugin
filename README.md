@@ -36,14 +36,14 @@ openclaw mcp login aimlapi
 
 ## Skills
 
-Skills live in `skills/` and load while the plugin is enabled (`openclaw skills list` shows them as `aimlapi-*`). They are a pinned copy of an `@ai-ml.api/skills` release (`skills/SOURCE.json`), licensed Apache-2.0 (`skills/LICENSE`).
+Skills live in `agent-skills/` (not `skills/`: ClawHub reads a `skills/` folder as a Claude/Codex bundle and would list the package as a bundle plugin) and load while the plugin is enabled (`openclaw skills list` shows them as `aimlapi-*`). They are a pinned copy of an `@ai-ml.api/skills` release (`agent-skills/SOURCE.json`), licensed Apache-2.0 (`agent-skills/LICENSE`).
 
 ## Development
 
 ```sh
 pnpm install
 pnpm typecheck && pnpm test && pnpm build
-pnpm check-skills                      # skills/ == pinned @ai-ml.api/skills release
+pnpm check-skills                      # agent-skills/ == pinned @ai-ml.api/skills release
 pnpm exec clawhub package validate .   # ClawHub Plugin Inspector
 ```
 
