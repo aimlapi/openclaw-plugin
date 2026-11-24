@@ -24,9 +24,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/aimlapi/openclaw-aimlapi"
+    "url": "git+https://github.com/aimlapi/openclaw-plugin.git"
   },
-  "homepage": "https://aimlapi.com",
+  "homepage": "https://github.com/aimlapi/openclaw-plugin#readme",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "24.10.1",
@@ -60,5 +60,12 @@
   "aimlapiSkills": {
     "package": "@ai-ml.api/skills",
     "version": "1.0.4"
+  },
+  "bugs": {
+    "url": "https://github.com/aimlapi/openclaw-plugin/issues"
+  },
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=24.16.0"
   }
 }

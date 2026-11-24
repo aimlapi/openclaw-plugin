@@ -1,0 +1,58 @@
+name: ClawHub Publish
+
+# Manual release of @aimlapi/openclaw-provider to ClawHub.
+# Real publishes run from main only. Auth: secrets.CLAWHUB_TOKEN when set,
+# otherwise GitHub OIDC trusted publishing (configure the repo on clawhub.ai).
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Preview without publishing
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Real publishes only from main
+        if: ${{ !inputs.dry_run && github.ref != 'refs/heads/main' }}
+        run: |
+          echo "::error::Run a real publish from main (got ${GITHUB_REF})."
+          exit 1
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm check-skills
+      - run: pnpm build
+      - run: pnpm pack --pack-destination dist-pack
+      - uses: actions/upload-artifact@v7
+        with:
+          name: clawhub-package
+          path: dist-pack/*.tgz
+          if-no-files-found: error
+
+  publish:
+    needs: pack
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    uses: openclaw/clawhub/.github/workflows/package-publish.yml@9d49df109d4ad3dc8a6ecf05d26b39f46d294721
+    with:
+      dry_run: ${{ inputs.dry_run }}
+      owner: aimlapi
+      package_artifact_name: clawhub-package
+    secrets:
+      clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}

@@ -1,4 +1,6 @@
 node_modules/
 *.tgz
 dist/
-.openclaw-test/
+dist-pack/
+reports/
+.clawhub-validation/
