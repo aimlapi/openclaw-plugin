@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// Copies the AI/ML API agent skills from the published npm package into ./skills.
+// Copies the AI/ML API agent skills from the published npm package into ./agent-skills.
 //
 // Source of truth: npm `@ai-ml.api/skills` (built from github.com/aimlapi/skills
 // with provenance). The version is pinned in package.json -> aimlapiSkills.version.
 // The tarball is checked against the registry's sha512 integrity before use.
 //
-//   node scripts/sync-skills.mjs          # write ./skills
-//   node scripts/sync-skills.mjs --check  # fail if ./skills differs from the pinned release
+//   node scripts/sync-skills.mjs          # write ./agent-skills
+//   node scripts/sync-skills.mjs --check  # fail if ./agent-skills differs from the pinned release
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -21,7 +21,9 @@ if (!skillsPackage || !version) {
   throw new Error("package.json is missing aimlapiSkills.package / aimlapiSkills.version");
 }
 const check = process.argv.includes("--check");
-const target = path.join(root, "skills");
+// Not "skills/": ClawHub treats any skills/ path as a Claude/Codex bundle marker
+// and would publish the package as bundle-plugin instead of code-plugin.
+const target = path.join(root, "agent-skills");
 
 const registryUrl = `https://registry.npmjs.org/${skillsPackage.replace("/", "%2f")}/${version}`;
 const meta = await (await fetch(registryUrl)).json();
@@ -55,10 +57,10 @@ try {
   if (check) {
     const diff = spawnDiff(staged, target);
     if (diff) {
-      console.error(`skills/ differs from ${skillsPackage}@${version}:\n${diff}`);
+      console.error(`agent-skills/ differs from ${skillsPackage}@${version}:\n${diff}`);
       process.exit(1);
     }
-    console.log(`skills/ matches ${skillsPackage}@${version}`);
+    console.log(`agent-skills/ matches ${skillsPackage}@${version}`);
   } else {
     fs.rmSync(target, { recursive: true, force: true });
     fs.cpSync(staged, target, { recursive: true });

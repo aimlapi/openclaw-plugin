@@ -99,19 +99,28 @@ describe("plugin manifest", () => {
   });
 
   it("ships every skill of the pinned @ai-ml.api/skills release", () => {
-    expect(manifest.skills).toEqual(["./skills"]);
-    const source = readJson("skills/SOURCE.json");
+    expect(manifest.skills).toEqual(["./agent-skills"]);
+    const source = readJson("agent-skills/SOURCE.json");
     expect(source).toMatchObject(pkg.aimlapiSkills);
     const skills = fs
-      .readdirSync(path.join(root, "skills"), { withFileTypes: true })
+      .readdirSync(path.join(root, "agent-skills"), { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
       .map((dirent) => dirent.name);
     expect(skills.length).toBeGreaterThanOrEqual(13);
     for (const skill of skills) {
       expect(skill).toMatch(/^aimlapi-/);
-      expect(fs.existsSync(path.join(root, "skills", skill, "SKILL.md"))).toBe(true);
+      expect(fs.existsSync(path.join(root, "agent-skills", skill, "SKILL.md"))).toBe(true);
     }
-    expect(pkg.files).toContain("skills");
+    expect(pkg.files).toContain("agent-skills");
+  });
+
+  it("has no Claude/Codex bundle marker paths, so ClawHub keeps it a code-plugin", () => {
+    // clawhub detectPackageFamily(): any packed path under skills/, commands/ or agents/,
+    // or .mcp.json / .lsp.json / settings.json / hooks/hooks.json, makes a bundle-plugin.
+    for (const entry of pkg.files as string[]) {
+      expect(entry).not.toMatch(/^(skills|commands|agents)(\/|$)/);
+      expect([".mcp.json", ".lsp.json", "settings.json", "hooks"]).not.toContain(entry);
+    }
   });
 
   it("installs from ClawHub only (the @aimlapi npm scope is not ours)", () => {
