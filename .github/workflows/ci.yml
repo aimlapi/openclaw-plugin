@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Skills match the pinned @ai-ml.api/skills release
+        run: pnpm check-skills
+      - run: pnpm build
+      - name: ClawHub Plugin Inspector
+        run: pnpm exec clawhub package validate . --out "$RUNNER_TEMP/plugin-inspector"
+      - name: Pack
+        run: pnpm pack --pack-destination "$RUNNER_TEMP/pack" && tar -tzf "$RUNNER_TEMP"/pack/*.tgz | sort

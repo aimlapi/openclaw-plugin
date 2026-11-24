@@ -1,0 +1,6 @@
+node_modules/
+*.tgz
+dist/
+dist-pack/
+reports/
+.clawhub-validation/
