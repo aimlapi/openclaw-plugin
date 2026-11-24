@@ -1,0 +1,64 @@
+{
+  "name": "@aimlapi/openclaw-provider",
+  "version": "1.3.0",
+  "description": "AI/ML API plugin for OpenClaw: 300+ chat models, video generation, web search, the AI/ML API MCP server and agent skills through one API key.",
+  "type": "module",
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ],
+    "install": {
+      "clawhubSpec": "clawhub:@aimlapi/openclaw-provider",
+      "defaultChoice": "clawhub",
+      "minHostVersion": ">=2026.11.8"
+    },
+    "compat": {
+      "pluginApi": ">=2026.11.8"
+    },
+    "build": {
+      "openclawVersion": "2026.11.8"
+    },
+    "release": {
+      "publishToClawHub": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aimlapi/openclaw-aimlapi"
+  },
+  "homepage": "https://aimlapi.com",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "clawhub": "0.23.1",
+    "openclaw": "2026.11.8",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "sync-skills": "node scripts/sync-skills.mjs",
+    "check-skills": "node scripts/sync-skills.mjs --check"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "openclaw.plugin.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "openclaw": ">=2026.11.8"
+  },
+  "peerDependenciesMeta": {
+    "openclaw": {
+      "optional": true
+    }
+  },
+  "aimlapiSkills": {
+    "package": "@ai-ml.api/skills",
+    "version": "1.0.4"
+  }
+}
